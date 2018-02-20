@@ -28,10 +28,12 @@ io.on("connection", function(socket){
     });
     
     socket.on("answer", function(data){
+        
         var msg = "Wrong!"
         if(allrooms[socket.myRoom].q.a == data){
            msg = "You got it!";
         }
+        
         socket.emit("result", msg)
     });
     
