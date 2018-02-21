@@ -3,38 +3,35 @@ const server = require("http").Server();
 
 var io = require("socket.io")(server);
 
-var allrooms = {};
+var allqs = {};
 
 io.on("connection", function(socket){
     
     socket.on("joinroom", function(data){
+        console.log("joining room", data);
+        
         socket.join(data);
         socket.myRoom = data;
         
-        if(!allrooms[data]){
-            allrooms[data] = {
-                users:[],
-                q:{}
-            };
+        if(!allqs[data]){
+            allqs[data] = {
+                qobj:{}
+            };   
         }
-        console.log(data,"joinroom");
-    });
-    
-    socket.on("qsubmit", function(data){
-        //tell everybody there's a new question
-        console.log(data);
-        allrooms[socket.myRoom].q = data;
-        socket.to(socket.myRoom).emit("newq", data);
+        
     });
     
     socket.on("answer", function(data){
-        
-        var msg = "Wrong!"
-        if(allrooms[socket.myRoom].q.a == data){
-           msg = "You got it!";
+        var msg = "WRONG!";
+        if(data == allqs[socket.myRoom].qobj.a){
+            msg = "You've won in life";
         }
-        
-        socket.emit("result", msg)
+        socket.emit("result", msg);
+    });
+    
+    socket.on("qsubmit", function(data){
+        allqs[socket.myRoom].qobj = data;
+        socket.to(socket.myRoom).emit("newq", data); 
     });
     
     socket.on("disconnect", function(){

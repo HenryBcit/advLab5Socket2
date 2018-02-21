@@ -8,7 +8,6 @@ var io = require("socket.io")(server);
 //var allusers2 = [];
 
 var allusers = {};
-var allstickers = {};
 
 io.on("connection", function(socket){
     console.log("connect");
@@ -28,7 +27,6 @@ io.on("connection", function(socket){
         
         if(!allusers[data]){
             allusers[data] = [];
-            allstickers[data] = [];
         }
         
         allusers[data].push(socket.id);
@@ -39,11 +37,6 @@ io.on("connection", function(socket){
     socket.on("mymove", function(data){
         //console.log(data);
         socket.to(this.myRoom).emit("newmove", data); 
-    });
-    
-    socket.on("sticker", function(data){
-        allstickers[this.myRoom].push(data);
-        io.to(this.myRoom).emit("newsticker", allstickers[this.myRoom]);
     });
     
     socket.on("disconnect", function(){
